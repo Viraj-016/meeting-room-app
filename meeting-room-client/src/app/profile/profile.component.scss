@@ -1,0 +1,257 @@
+.profile-container {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+
+    .initials {
+      font-size: 2.5rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+  }
+
+  .header-info {
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 500;
+      margin: 0 0 4px 0;
+    }
+
+    .username {
+      font-size: 1rem;
+      margin: 0 0 4px 0;
+      opacity: 0.9;
+    }
+
+    .role {
+      font-size: 0.9rem;
+      margin: 0;
+      opacity: 0.8;
+      background-color: rgba(255, 255, 255, 0.2);
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+  }
+}
+
+.profile-card,
+.password-card,
+.account-card {
+  margin-bottom: 24px;
+}
+
+.profile-card {
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.25rem;
+    }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 500;
+    }
+
+    span {
+      font-size: 1rem;
+      color: #333;
+    }
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.form-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    min-width: 150px;
+
+    mat-spinner {
+      display: inline-block;
+    }
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.password-card {
+  mat-expansion-panel {
+    box-shadow: none;
+  }
+
+  mat-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  form {
+    padding-top: 16px;
+  }
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+.password-mismatch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f44336;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background-color: #ffebee;
+  border-radius: 4px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.account-card {
+  mat-card-header {
+    margin-bottom: 16px;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.25rem;
+    }
+  }
+
+  .account-info {
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        color: #666;
+        font-weight: 500;
+      }
+
+      .value {
+        color: #333;
+
+        &.status {
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 0.85rem;
+
+          &.active {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+          }
+
+          &.inactive {
+            background-color: #ffebee;
+            color: #c62828;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 16px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 24px;
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+
+      .initials {
+        font-size: 2rem;
+      }
+    }
+
+    .header-info h1 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .info-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

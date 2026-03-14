@@ -1,0 +1,126 @@
+<div class="room-form-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="cancel()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-content">
+      <h1>{{ isEditMode ? 'Edit Room' : 'Add New Room' }}</h1>
+      <p class="subtitle">{{ isEditMode ? 'Update room details' : 'Create a new meeting room' }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <mat-card *ngIf="!loading" class="form-card">
+    <mat-card-content>
+      <form [formGroup]="roomForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <!-- Name -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Room Name</mat-label>
+            <input matInput formControlName="name" placeholder="Enter room name">
+            <mat-icon matSuffix>meeting_room</mat-icon>
+            <mat-error *ngIf="roomForm.get('name')?.invalid">
+              {{ getErrorMessage('name') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Capacity -->
+          <mat-form-field appearance="outline">
+            <mat-label>Capacity</mat-label>
+            <input matInput type="number" formControlName="capacity" placeholder="Enter capacity">
+            <mat-icon matSuffix>people</mat-icon>
+            <mat-error *ngIf="roomForm.get('capacity')?.invalid">
+              {{ getErrorMessage('capacity') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Location -->
+          <mat-form-field appearance="outline">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location" placeholder="e.g., Building A, Floor 2">
+            <mat-icon matSuffix>location_on</mat-icon>
+            <mat-error *ngIf="roomForm.get('location')?.invalid">
+              {{ getErrorMessage('location') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Image URL -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Image URL</mat-label>
+            <input matInput formControlName="imageUrl" placeholder="https://example.com/room-image.jpg">
+            <mat-icon matSuffix>image</mat-icon>
+            <mat-error *ngIf="roomForm.get('imageUrl')?.invalid">
+              {{ getErrorMessage('imageUrl') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Description -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3" placeholder="Enter room description"></textarea>
+            <mat-error *ngIf="roomForm.get('description')?.invalid">
+              {{ getErrorMessage('description') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Amenities -->
+          <div class="amenities-section full-width">
+            <label class="section-label">Amenities</label>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Add amenities</mat-label>
+              <mat-chip-grid #chipGrid>
+                <mat-chip-row *ngFor="let amenity of amenities" (removed)="removeAmenity(amenity)">
+                  {{ amenity }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+              </mat-chip-grid>
+              <input placeholder="Type and press Enter..."
+                     [matChipInputFor]="chipGrid"
+                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                     (matChipInputTokenEnd)="addAmenity($event)">
+            </mat-form-field>
+
+            <div class="available-amenities">
+              <span class="helper-text">Quick add:</span>
+              <div class="amenity-buttons">
+                <button mat-stroked-button
+                        type="button"
+                        *ngFor="let amenity of availableAmenities"
+                        [disabled]="amenities.includes(amenity)"
+                        (click)="selectAmenity(amenity)"
+                        class="amenity-btn">
+                  {{ amenity }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Preview -->
+        <div class="image-preview" *ngIf="roomForm.get('imageUrl')?.value">
+          <label class="section-label">Image Preview</label>
+          <div class="preview-container">
+            <img [src]="roomForm.get('imageUrl')?.value" alt="Room preview" (error)="roomForm.get('imageUrl')?.setErrors({invalid: true})">
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="cancel()">
+            Cancel
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving || roomForm.invalid">
+            <mat-spinner *ngIf="saving" diameter="20"></mat-spinner>
+            <span *ngIf="!saving">{{ isEditMode ? 'Update Room' : 'Create Room' }}</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

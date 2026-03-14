@@ -1,0 +1,319 @@
+.admin-user-detail {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  .back-button {
+    margin-top: 4px;
+  }
+
+  .header-content {
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+
+  &.small {
+    min-height: 150px;
+  }
+}
+
+.content-grid {
+  display: grid;
+  gap: 24px;
+}
+
+// User Info Card
+.user-info-card {
+  .user-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    width: 100%;
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .user-title {
+      flex: 1;
+      min-width: 150px;
+
+      mat-card-title {
+        font-size: 24px;
+        margin-bottom: 4px;
+      }
+
+      mat-card-subtitle {
+        font-size: 14px;
+      }
+    }
+
+    .user-badges {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
+  .user-details {
+    padding: 16px 0;
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      mat-icon {
+        color: #666;
+        flex-shrink: 0;
+      }
+
+      .detail-content {
+        display: flex;
+        flex-direction: column;
+
+        .label {
+          font-size: 12px;
+          color: #999;
+          text-transform: uppercase;
+        }
+
+        .value {
+          font-size: 16px;
+          color: #333;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  .edit-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 16px 0;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  mat-card-actions {
+    padding: 16px;
+    gap: 8px;
+
+    button {
+      mat-spinner {
+        margin: 0 auto;
+      }
+    }
+  }
+}
+
+// Stats Cards
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px !important;
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      color: white;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    &.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    &.confirmed { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    &.cancelled { background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%); }
+    &.completed { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+    }
+  }
+}
+
+// Bookings Card
+.bookings-card {
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .bookings-table {
+    width: 100%;
+
+    .room-info {
+      display: flex;
+      flex-direction: column;
+
+      .room-name {
+        font-weight: 500;
+      }
+
+      .room-location {
+        font-size: 12px;
+        color: #666;
+      }
+    }
+  }
+
+  .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: #999;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+}
+
+// Status styles
+.status-confirmed {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+}
+
+.status-cancelled {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.status-completed {
+  background-color: #cce5ff !important;
+  color: #004085 !important;
+}
+
+.status-pending {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+}
+
+.status-active {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+}
+
+.status-inactive {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+// Role styles
+.role-admin {
+  background-color: #e3f2fd !important;
+  color: #1565c0 !important;
+}
+
+.role-user {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .admin-user-detail {
+    padding: 16px;
+  }
+
+  .user-info-card {
+    .user-header {
+      flex-direction: column;
+      text-align: center;
+
+      .user-title {
+        text-align: center;
+      }
+    }
+
+    .edit-form {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .stats-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

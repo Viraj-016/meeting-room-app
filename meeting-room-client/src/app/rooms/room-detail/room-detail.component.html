@@ -1,0 +1,171 @@
+<div class="room-detail-container">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div class="room-content" *ngIf="!loading && room">
+    <!-- Back Button -->
+    <button mat-button (click)="goBack()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Rooms
+    </button>
+
+    <div class="detail-grid">
+      <!-- Room Information -->
+      <div class="room-info-section">
+        <mat-card class="room-info-card">
+          <div class="room-image" [style.backgroundImage]="room.imageUrl ? 'url(' + room.imageUrl + ')' : ''">
+            <div class="room-image-placeholder" *ngIf="!room.imageUrl">
+              <mat-icon>meeting_room</mat-icon>
+            </div>
+          </div>
+          <mat-card-content>
+            <h1 class="room-name">{{ room.name }}</h1>
+
+            <div class="room-meta">
+              <div class="meta-item" *ngIf="room.location">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ room.location }}</span>
+              </div>
+              <div class="meta-item">
+                <mat-icon>people</mat-icon>
+                <span>Capacity: {{ room.capacity }} people</span>
+              </div>
+            </div>
+
+            <p class="room-description" *ngIf="room.description">
+              {{ room.description }}
+            </p>
+
+            <mat-divider></mat-divider>
+
+            <div class="amenities-section">
+              <h3>Amenities</h3>
+              <mat-chip-set *ngIf="room.amenities && room.amenities.length > 0">
+                <mat-chip *ngFor="let amenity of room.amenities">
+                  {{ amenity }}
+                </mat-chip>
+              </mat-chip-set>
+              <p *ngIf="!room.amenities || room.amenities.length === 0" class="no-amenities">
+                No amenities listed
+              </p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Today's Bookings -->
+        <mat-card class="schedule-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>schedule</mat-icon>
+              Selected Date Schedule
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="selectedDateBookings.length === 0" class="no-bookings">
+              <mat-icon>event_available</mat-icon>
+              <p>No bookings for selected date</p>
+            </div>
+            <mat-list *ngIf="selectedDateBookings.length > 0">
+              <mat-list-item *ngFor="let booking of selectedDateBookings">
+                <mat-icon matListItemIcon>event</mat-icon>
+                <span matListItemTitle>{{ booking.title }}</span>
+                <span matListItemLine>
+                  {{ formatTime(booking.startTime) }} - {{ formatTime(booking.endTime) }}
+                  <span class="booked-by" *ngIf="booking.bookedBy"> | {{ booking.bookedBy }}</span>
+                </span>
+              </mat-list-item>
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Booking Form -->
+      <div class="booking-form-section">
+        <mat-card class="booking-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>event_note</mat-icon>
+              Book This Room
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Meeting Title</mat-label>
+                <input matInput formControlName="title" placeholder="Enter meeting title">
+                <mat-error *ngIf="bookingForm.get('title')?.hasError('required')">
+                  Title is required
+                </mat-error>
+                <mat-error *ngIf="bookingForm.get('title')?.hasError('minlength')">
+                  Title must be at least 3 characters
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Description (Optional)</mat-label>
+                <textarea matInput
+                          formControlName="description"
+                          placeholder="Enter meeting description"
+                          rows="3"></textarea>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Select Date</mat-label>
+                <input matInput
+                       [matDatepicker]="picker"
+                       formControlName="date"
+                       [min]="minDate"
+                       (dateChange)="onDateChange()">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="bookingForm.get('date')?.hasError('required')">
+                  Date is required
+                </mat-error>
+              </mat-form-field>
+
+              <div class="time-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Start Time</mat-label>
+                  <mat-select formControlName="startTime">
+                    <mat-option *ngFor="let time of timeSlots" [value]="time">
+                      {{ time }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="bookingForm.get('startTime')?.hasError('required')">
+                    Start time is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>End Time</mat-label>
+                  <mat-select formControlName="endTime">
+                    <mat-option *ngFor="let time of getEndTimeSlots()" [value]="time">
+                      {{ time }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="bookingForm.get('endTime')?.hasError('required')">
+                    End time is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <button mat-raised-button
+                      color="primary"
+                      type="submit"
+                      class="submit-button"
+                      [disabled]="submitting">
+                <mat-spinner diameter="20" *ngIf="submitting"></mat-spinner>
+                <span *ngIf="!submitting">
+                  <mat-icon>book_online</mat-icon>
+                  Book Room
+                </span>
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

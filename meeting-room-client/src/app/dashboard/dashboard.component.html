@@ -1,0 +1,134 @@
+<div class="dashboard-container">
+  <!-- Welcome Section -->
+  <div class="welcome-section">
+    <h1>{{ getGreeting() }}, {{ currentUser?.fullName || 'User' }}!</h1>
+    <p class="welcome-subtitle">Here's your meeting schedule overview</p>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div class="dashboard-content" *ngIf="!loading">
+    <!-- Quick Actions -->
+    <mat-card class="quick-actions-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>flash_on</mat-icon>
+          Quick Actions
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" routerLink="/rooms">
+            <mat-icon>meeting_room</mat-icon>
+            Book a Room
+          </button>
+          <button mat-raised-button routerLink="/my-bookings">
+            <mat-icon>event</mat-icon>
+            My Bookings
+          </button>
+          <button mat-raised-button routerLink="/profile">
+            <mat-icon>person</mat-icon>
+            My Profile
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Today's Schedule -->
+    <mat-card class="schedule-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>today</mat-icon>
+          Today's Schedule
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="todayBookings.length === 0" class="no-bookings">
+          <mat-icon>event_available</mat-icon>
+          <p>No meetings scheduled for today</p>
+        </div>
+        <div class="booking-list" *ngIf="todayBookings.length > 0">
+          <div class="booking-item" *ngFor="let booking of todayBookings">
+            <div class="booking-time">
+              <span class="time">{{ formatTime(booking.startTime) }}</span>
+              <span class="separator">-</span>
+              <span class="time">{{ formatTime(booking.endTime) }}</span>
+            </div>
+            <div class="booking-details">
+              <h4>{{ booking.title }}</h4>
+              <p class="room-info">
+                <mat-icon>room</mat-icon>
+                {{ booking.roomName }}
+                <span *ngIf="booking.roomLocation"> - {{ booking.roomLocation }}</span>
+              </p>
+            </div>
+            <mat-chip-set>
+              <mat-chip [ngClass]="getStatusClass(booking.status)">
+                {{ booking.status }}
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Upcoming Bookings Widget -->
+    <mat-card class="upcoming-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>upcoming</mat-icon>
+          Upcoming Bookings
+        </mat-card-title>
+        <button mat-button color="primary" routerLink="/my-bookings" class="view-all-btn">
+          View All
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="upcomingBookings.length === 0" class="no-bookings">
+          <mat-icon>event_busy</mat-icon>
+          <p>No upcoming bookings</p>
+          <button mat-raised-button color="primary" routerLink="/rooms">
+            Book a Room
+          </button>
+        </div>
+        <div class="booking-list" *ngIf="upcomingBookings.length > 0">
+          <div class="booking-item" *ngFor="let booking of upcomingBookings" routerLink="/rooms/{{ booking.roomId }}">
+            <div class="booking-date">
+              <span class="date">{{ formatDate(booking.startTime) }}</span>
+              <span class="time-range">{{ formatTime(booking.startTime) }} - {{ formatTime(booking.endTime) }}</span>
+            </div>
+            <mat-divider [vertical]="true"></mat-divider>
+            <div class="booking-details">
+              <h4>{{ booking.title }}</h4>
+              <p class="room-info">
+                <mat-icon>meeting_room</mat-icon>
+                {{ booking.roomName }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+      <mat-card class="stat-card">
+        <mat-icon color="primary">event</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">{{ todayBookings.length }}</span>
+          <span class="stat-label">Today's Meetings</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <mat-icon color="accent">schedule</mat-icon>
+        <div class="stat-info">
+          <span class="stat-value">{{ upcomingBookings.length }}</span>
+          <span class="stat-label">Upcoming (7 days)</span>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

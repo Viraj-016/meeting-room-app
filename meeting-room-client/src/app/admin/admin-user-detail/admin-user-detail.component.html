@@ -1,0 +1,260 @@
+<div class="admin-user-detail">
+  <div class="page-header">
+    <button mat-icon-button (click)="goBack()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-content">
+      <h1>User Details</h1>
+      <p class="subtitle">View and manage user information</p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && user" class="content-grid">
+    <!-- User Info Card -->
+    <mat-card class="user-info-card">
+      <mat-card-header>
+        <div class="user-header">
+          <div class="avatar">
+            {{ user.fullName.charAt(0).toUpperCase() }}
+          </div>
+          <div class="user-title">
+            <mat-card-title>{{ user.fullName }}</mat-card-title>
+            <mat-card-subtitle>{{ '@' + user.username }}</mat-card-subtitle>
+          </div>
+          <div class="user-badges">
+            <mat-chip [ngClass]="getRoleClass(user.role)">{{ user.role }}</mat-chip>
+            <mat-chip [ngClass]="user.isActive ? 'status-active' : 'status-inactive'">
+              {{ user.isActive ? 'Active' : 'Inactive' }}
+            </mat-chip>
+          </div>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- View Mode -->
+        <div *ngIf="!editing" class="user-details">
+          <div class="detail-row">
+            <mat-icon>email</mat-icon>
+            <div class="detail-content">
+              <span class="label">Email</span>
+              <span class="value">{{ user.email }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <mat-icon>business</mat-icon>
+            <div class="detail-content">
+              <span class="label">Department</span>
+              <span class="value">{{ user.department || 'Not assigned' }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <mat-icon>phone</mat-icon>
+            <div class="detail-content">
+              <span class="label">Phone</span>
+              <span class="value">{{ user.phone || 'Not provided' }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <mat-icon>calendar_today</mat-icon>
+            <div class="detail-content">
+              <span class="label">Member Since</span>
+              <span class="value">{{ formatDate(user.createdAt) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Mode -->
+        <form *ngIf="editing" [formGroup]="editForm" class="edit-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="fullName">
+            <mat-error *ngIf="editForm.get('fullName')?.hasError('required')">Full name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email">
+            <mat-error *ngIf="editForm.get('email')?.hasError('required')">Email is required</mat-error>
+            <mat-error *ngIf="editForm.get('email')?.hasError('email')">Invalid email format</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Department</mat-label>
+            <mat-select formControlName="department">
+              <mat-option value="">Not assigned</mat-option>
+              <mat-option *ngFor="let dept of departments" [value]="dept">
+                {{ dept }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              <mat-option *ngFor="let role of roles" [value]="role">
+                {{ role }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button (click)="toggleUserStatus()" [color]="user.isActive ? 'warn' : 'primary'">
+          <mat-icon>{{ user.isActive ? 'block' : 'check_circle' }}</mat-icon>
+          {{ user.isActive ? 'Deactivate' : 'Activate' }}
+        </button>
+
+        <button mat-stroked-button (click)="toggleEdit()" *ngIf="!editing">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+
+        <ng-container *ngIf="editing">
+          <button mat-stroked-button (click)="toggleEdit()">Cancel</button>
+          <button mat-raised-button color="primary" (click)="saveUser()" [disabled]="saving || editForm.invalid">
+            <mat-spinner *ngIf="saving" diameter="20"></mat-spinner>
+            <span *ngIf="!saving">Save</span>
+          </button>
+        </ng-container>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon total">
+            <mat-icon>event</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ user.bookingCount }}</span>
+            <span class="stat-label">Total Bookings</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon confirmed">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ bookingStats.confirmed }}</span>
+            <span class="stat-label">Confirmed</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon cancelled">
+            <mat-icon>cancel</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ bookingStats.cancelled }}</span>
+            <span class="stat-label">Cancelled</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon completed">
+            <mat-icon>done_all</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ bookingStats.completed }}</span>
+            <span class="stat-label">Completed</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Bookings History -->
+    <mat-card class="bookings-card">
+      <mat-card-header>
+        <mat-card-title>Booking History</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="bookingsLoading" class="loading-container small">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+
+        <div *ngIf="!bookingsLoading && bookings.length === 0" class="no-data">
+          <mat-icon>event_busy</mat-icon>
+          <p>No bookings found</p>
+        </div>
+
+        <div *ngIf="!bookingsLoading && bookings.length > 0" class="table-container">
+          <table mat-table [dataSource]="bookings" class="bookings-table">
+            <!-- Room Column -->
+            <ng-container matColumnDef="room">
+              <th mat-header-cell *matHeaderCellDef>Room</th>
+              <td mat-cell *matCellDef="let booking">
+                <div class="room-info">
+                  <span class="room-name">{{ booking.roomName }}</span>
+                  <span class="room-location" *ngIf="booking.roomLocation">{{ booking.roomLocation }}</span>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Title Column -->
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef>Title</th>
+              <td mat-cell *matCellDef="let booking">{{ booking.title }}</td>
+            </ng-container>
+
+            <!-- Date Column -->
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <td mat-cell *matCellDef="let booking">{{ formatDate(booking.startTime) }}</td>
+            </ng-container>
+
+            <!-- Time Column -->
+            <ng-container matColumnDef="time">
+              <th mat-header-cell *matHeaderCellDef>Time</th>
+              <td mat-cell *matCellDef="let booking">
+                {{ formatTime(booking.startTime) }} - {{ formatTime(booking.endTime) }}
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let booking">
+                <mat-chip [ngClass]="getStatusClass(booking.status)">
+                  {{ booking.status }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <mat-paginator
+            [length]="totalBookings"
+            [pageSize]="bookingsPageSize"
+            [pageSizeOptions]="[5, 10, 25]"
+            [pageIndex]="bookingsCurrentPage - 1"
+            (page)="onBookingsPageChange($event)"
+            showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

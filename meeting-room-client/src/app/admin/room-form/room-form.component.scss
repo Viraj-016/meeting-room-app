@@ -1,0 +1,152 @@
+.room-form-container {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  .back-button {
+    margin-top: 4px;
+  }
+
+  .header-content {
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.form-card {
+  mat-card-content {
+    padding: 24px !important;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.section-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.amenities-section {
+  margin-top: 8px;
+
+  .available-amenities {
+    margin-top: 12px;
+
+    .helper-text {
+      font-size: 12px;
+      color: #666;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .amenity-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .amenity-btn {
+        font-size: 12px;
+        min-height: 32px;
+        line-height: 1;
+        padding: 0 12px;
+
+        &:disabled {
+          opacity: 0.5;
+        }
+      }
+    }
+  }
+}
+
+.image-preview {
+  margin-top: 24px;
+
+  .preview-container {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 400px;
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+
+  button {
+    min-width: 120px;
+
+    mat-spinner {
+      margin: 0 auto;
+    }
+  }
+}
+
+// Material form field adjustments
+mat-form-field {
+  width: 100%;
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .room-form-container {
+    padding: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

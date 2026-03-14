@@ -1,0 +1,226 @@
+<div class="profile-container">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div class="profile-content" *ngIf="!loading && user">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="avatar">
+        <span class="initials">{{ getInitials() }}</span>
+      </div>
+      <div class="header-info">
+        <h1>{{ user.fullName }}</h1>
+        <p class="username">{{ user.username }}</p>
+        <p class="role">{{ user.role }}</p>
+      </div>
+    </div>
+
+    <!-- Profile Information Card -->
+    <mat-card class="profile-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>person</mat-icon>
+          Profile Information
+        </mat-card-title>
+        <button mat-button
+                color="primary"
+                (click)="toggleEditMode()"
+                *ngIf="!editMode">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+        <button mat-button
+                (click)="toggleEditMode()"
+                *ngIf="editMode">
+          Cancel
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- View Mode -->
+        <div class="info-grid" *ngIf="!editMode">
+          <div class="info-item">
+            <label>Full Name</label>
+            <span>{{ user.fullName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Email</label>
+            <span>{{ user.email }}</span>
+          </div>
+          <div class="info-item">
+            <label>Department</label>
+            <span>{{ user.department || 'Not specified' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Phone</label>
+            <span>{{ user.phone || 'Not specified' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Member Since</label>
+            <span>{{ formatDate(user.createdAt) }}</span>
+          </div>
+        </div>
+
+        <!-- Edit Mode -->
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" *ngIf="editMode">
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="fullName">
+              <mat-error *ngIf="profileForm.get('fullName')?.hasError('required')">
+                Full name is required
+              </mat-error>
+              <mat-error *ngIf="profileForm.get('fullName')?.hasError('minlength')">
+                Name must be at least 2 characters
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email">
+              <mat-error *ngIf="profileForm.get('email')?.hasError('required')">
+                Email is required
+              </mat-error>
+              <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
+                Please enter a valid email
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Department</mat-label>
+              <input matInput formControlName="department">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Phone</mat-label>
+              <input matInput formControlName="phone">
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button
+                    color="primary"
+                    type="submit"
+                    [disabled]="savingProfile || profileForm.invalid">
+              <mat-spinner diameter="20" *ngIf="savingProfile"></mat-spinner>
+              <span *ngIf="!savingProfile">Save Changes</span>
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Change Password Card -->
+    <mat-card class="password-card">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>lock</mat-icon>
+            Change Password
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Current Password</mat-label>
+            <input matInput
+                   [type]="hideCurrentPassword ? 'password' : 'text'"
+                   formControlName="currentPassword">
+            <button mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="hideCurrentPassword = !hideCurrentPassword">
+              <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+              Current password is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>New Password</mat-label>
+            <input matInput
+                   [type]="hideNewPassword ? 'password' : 'text'"
+                   formControlName="newPassword">
+            <button mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="hideNewPassword = !hideNewPassword">
+              <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+              New password is required
+            </mat-error>
+            <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+              Password must be at least 6 characters
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Confirm New Password</mat-label>
+            <input matInput
+                   [type]="hideConfirmPassword ? 'password' : 'text'"
+                   formControlName="confirmPassword">
+            <button mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="hideConfirmPassword = !hideConfirmPassword">
+              <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+              Please confirm your password
+            </mat-error>
+          </mat-form-field>
+
+          <div class="password-mismatch" *ngIf="passwordForm.hasError('passwordMismatch') && passwordForm.get('confirmPassword')?.touched">
+            <mat-icon>warning</mat-icon>
+            Passwords do not match
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button
+                    color="warn"
+                    type="submit"
+                    [disabled]="changingPassword || passwordForm.invalid">
+              <mat-spinner diameter="20" *ngIf="changingPassword"></mat-spinner>
+              <span *ngIf="!changingPassword">
+                <mat-icon>lock</mat-icon>
+                Change Password
+              </span>
+            </button>
+          </div>
+        </form>
+      </mat-expansion-panel>
+    </mat-card>
+
+    <!-- Account Info -->
+    <mat-card class="account-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Account Information
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="account-info">
+          <div class="info-row">
+            <span class="label">Username:</span>
+            <span class="value">{{ user.username }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Role:</span>
+            <span class="value">{{ user.role }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Account Status:</span>
+            <span class="value status" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+              {{ user.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

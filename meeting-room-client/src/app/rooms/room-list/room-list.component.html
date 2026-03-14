@@ -1,0 +1,118 @@
+<div class="room-list-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>Meeting Rooms</h1>
+    <p>Find and book a room for your next meeting</p>
+  </div>
+
+  <!-- Filters Section -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search rooms</mat-label>
+          <input matInput
+                 [(ngModel)]="searchTerm"
+                 (keyup.enter)="onSearch()"
+                 placeholder="Search by name...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="searchTerm = ''; onSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Min Capacity</mat-label>
+          <mat-select [(ngModel)]="selectedCapacity" (selectionChange)="onFilterChange()">
+            <mat-option [value]="null">Any</mat-option>
+            <mat-option *ngFor="let cap of capacityOptions" [value]="cap">
+              {{ cap }}+ people
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Location</mat-label>
+          <mat-select [(ngModel)]="selectedLocation" (selectionChange)="onFilterChange()">
+            <mat-option [value]="null">All Locations</mat-option>
+            <mat-option *ngFor="let loc of locations" [value]="loc">
+              {{ loc }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-button
+                color="primary"
+                *ngIf="hasActiveFilters()"
+                (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          Clear Filters
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Room Grid -->
+  <div class="rooms-grid" *ngIf="!loading">
+    <mat-card class="room-card" *ngFor="let room of rooms" (click)="viewRoomDetail(room)">
+      <div class="room-image" [style.backgroundImage]="room.imageUrl ? 'url(' + room.imageUrl + ')' : ''">
+        <div class="room-image-placeholder" *ngIf="!room.imageUrl">
+          <mat-icon>meeting_room</mat-icon>
+        </div>
+        <div class="capacity-badge">
+          <mat-icon>people</mat-icon>
+          {{ room.capacity }}
+        </div>
+      </div>
+      <mat-card-content>
+        <h3 class="room-name">{{ room.name }}</h3>
+        <p class="room-location" *ngIf="room.location">
+          <mat-icon>location_on</mat-icon>
+          {{ room.location }}
+        </p>
+        <div class="amenities-list" *ngIf="room.amenities && room.amenities.length > 0">
+          <mat-chip-set>
+            <mat-chip *ngFor="let amenity of getAmenitiesPreview(room.amenities)" class="amenity-chip">
+              {{ amenity }}
+            </mat-chip>
+            <mat-chip *ngIf="hasMoreAmenities(room.amenities)" class="more-chip">
+              +{{ getMoreAmenitiesCount(room.amenities) }} more
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="viewRoomDetail(room); $event.stopPropagation()">
+          <mat-icon>visibility</mat-icon>
+          View & Book
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && rooms.length === 0">
+    <mat-icon>search_off</mat-icon>
+    <h3>No rooms found</h3>
+    <p>Try adjusting your filters or search term</p>
+    <button mat-raised-button color="primary" (click)="clearFilters()">
+      Clear Filters
+    </button>
+  </div>
+
+  <!-- Pagination -->
+  <mat-paginator
+    *ngIf="!loading && rooms.length > 0"
+    [length]="totalRooms"
+    [pageSize]="pageSize"
+    [pageIndex]="currentPage - 1"
+    [pageSizeOptions]="[6, 12, 24, 48]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

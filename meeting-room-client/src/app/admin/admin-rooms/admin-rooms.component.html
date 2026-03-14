@@ -1,0 +1,154 @@
+<div class="admin-rooms">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Manage Rooms</h1>
+      <p class="subtitle">Manage all meeting rooms in the system</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="addNewRoom()">
+      <mat-icon>add</mat-icon>
+      Add New Room
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search rooms</mat-label>
+          <input matInput [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="Room name...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Location</mat-label>
+          <mat-select [(ngModel)]="selectedLocation" (selectionChange)="onFilterChange()">
+            <mat-option [value]="null">All Locations</mat-option>
+            <mat-option *ngFor="let location of locations" [value]="location">
+              {{ location }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-stroked-button (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+          Search
+        </button>
+
+        <button mat-stroked-button (click)="clearFilters()" *ngIf="hasActiveFilters()">
+          <mat-icon>clear</mat-icon>
+          Clear
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Rooms Table -->
+  <mat-card *ngIf="!loading" class="table-card">
+    <mat-card-content>
+      <div *ngIf="rooms.length === 0" class="no-data">
+        <mat-icon>meeting_room</mat-icon>
+        <p>No rooms found</p>
+        <button mat-stroked-button color="primary" (click)="addNewRoom()">
+          Add First Room
+        </button>
+      </div>
+
+      <div *ngIf="rooms.length > 0" class="table-container">
+        <table mat-table [dataSource]="rooms" class="rooms-table">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let room">
+              <div class="room-name-cell">
+                <div class="room-image" *ngIf="room.imageUrl">
+                  <img [src]="room.imageUrl" alt="{{ room.name }}">
+                </div>
+                <div class="room-image placeholder" *ngIf="!room.imageUrl">
+                  <mat-icon>meeting_room</mat-icon>
+                </div>
+                <span class="room-name">{{ room.name }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Capacity Column -->
+          <ng-container matColumnDef="capacity">
+            <th mat-header-cell *matHeaderCellDef>Capacity</th>
+            <td mat-cell *matCellDef="let room">
+              <div class="capacity-cell">
+                <mat-icon>people</mat-icon>
+                <span>{{ room.capacity }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Location Column -->
+          <ng-container matColumnDef="location">
+            <th mat-header-cell *matHeaderCellDef>Location</th>
+            <td mat-cell *matCellDef="let room">
+              {{ room.location || 'Not specified' }}
+            </td>
+          </ng-container>
+
+          <!-- Amenities Column -->
+          <ng-container matColumnDef="amenities">
+            <th mat-header-cell *matHeaderCellDef>Amenities</th>
+            <td mat-cell *matCellDef="let room">
+              <div class="amenities-cell">
+                <mat-chip *ngFor="let amenity of getAmenitiesPreview(room.amenities)" class="amenity-chip">
+                  {{ amenity }}
+                </mat-chip>
+                <mat-chip *ngIf="hasMoreAmenities(room.amenities)" class="more-chip" [matTooltip]="room.amenities.join(', ')">
+                  +{{ getMoreAmenitiesCount(room.amenities) }}
+                </mat-chip>
+                <span *ngIf="room.amenities.length === 0" class="no-amenities">None</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let room">
+              <mat-slide-toggle
+                [checked]="room.isActive"
+                (change)="toggleRoomStatus(room)"
+                color="primary"
+                [matTooltip]="room.isActive ? 'Click to deactivate' : 'Click to activate'">
+                {{ room.isActive ? 'Active' : 'Inactive' }}
+              </mat-slide-toggle>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let room">
+              <button mat-icon-button color="primary" (click)="editRoom(room)" matTooltip="Edit room">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.inactive-row]="!row.isActive"></tr>
+        </table>
+
+        <mat-paginator
+          [length]="totalRooms"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          [pageIndex]="currentPage - 1"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,248 @@
+.admin-dashboard {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .subtitle {
+    margin: 4px 0 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px !important;
+  }
+
+  .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: white;
+    }
+
+    &.rooms { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    &.active-rooms { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    &.users { background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%); }
+    &.active-users { background: linear-gradient(135deg, #0575e6 0%, #00f260 100%); }
+    &.today-bookings { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    &.total-bookings { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 600;
+      color: #333;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #666;
+    }
+  }
+}
+
+.info-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.info-card {
+  mat-card-header {
+    mat-icon[mat-card-avatar] {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+  }
+
+  .highlight-text {
+    font-size: 20px;
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+.bookings-card {
+  margin-bottom: 24px;
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+
+    .spacer {
+      flex: 1;
+    }
+  }
+
+  .bookings-table {
+    width: 100%;
+
+    .room-info, .booker-info {
+      display: flex;
+      flex-direction: column;
+
+      .room-name, .booker-name {
+        font-weight: 500;
+      }
+
+      .room-location, .booker-dept {
+        font-size: 12px;
+        color: #666;
+      }
+    }
+  }
+
+  .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: #999;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+}
+
+.quick-links-card {
+  .quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+  }
+
+  .quick-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    border-radius: 12px;
+    background: #f8f9fa;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #e9ecef;
+      transform: translateY(-2px);
+    }
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      margin-bottom: 8px;
+      color: #667eea;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+    }
+  }
+}
+
+// Status chip styles
+.status-confirmed {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+}
+
+.status-cancelled {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+.status-completed {
+  background-color: #cce5ff !important;
+  color: #004085 !important;
+}
+
+.status-pending {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

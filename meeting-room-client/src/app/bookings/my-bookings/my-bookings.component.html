@@ -1,0 +1,172 @@
+<div class="my-bookings-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>My Bookings</h1>
+    <p>Manage your meeting room reservations</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Tabs -->
+  <mat-card class="bookings-card" *ngIf="!loading">
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" animationDuration="200ms">
+      <!-- Upcoming Bookings Tab -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>upcoming</mat-icon>
+          <span class="tab-label">Upcoming</span>
+          <span class="tab-count" *ngIf="upcomingBookings.length > 0">{{ upcomingBookings.length }}</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div *ngIf="upcomingBookings.length === 0" class="empty-state">
+            <mat-icon>event_available</mat-icon>
+            <h3>No Upcoming Bookings</h3>
+            <p>You don't have any scheduled meetings</p>
+            <button mat-raised-button color="primary" routerLink="/rooms">
+              <mat-icon>add</mat-icon>
+              Book a Room
+            </button>
+          </div>
+
+          <div class="booking-list" *ngIf="upcomingBookings.length > 0">
+            <mat-card class="booking-item" *ngFor="let booking of upcomingBookings">
+              <div class="booking-header">
+                <div class="booking-date-time">
+                  <h3>{{ formatDate(booking.startTime) }}</h3>
+                  <p class="time-range">
+                    {{ formatTime(booking.startTime) }} - {{ formatTime(booking.endTime) }}
+                    <span class="duration">({{ getDuration(booking) }})</span>
+                  </p>
+                </div>
+                <mat-chip-set>
+                  <mat-chip [ngClass]="getStatusClass(booking.status)">
+                    {{ booking.status }}
+                  </mat-chip>
+                </mat-chip-set>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="booking-details">
+                <h4 class="booking-title">{{ booking.title }}</h4>
+                <p class="booking-description" *ngIf="booking.description">
+                  {{ booking.description }}
+                </p>
+                <div class="booking-room">
+                  <mat-icon>meeting_room</mat-icon>
+                  <span>{{ booking.roomName }}</span>
+                  <span *ngIf="booking.roomLocation" class="room-location">- {{ booking.roomLocation }}</span>
+                </div>
+              </div>
+
+              <div class="booking-actions" *ngIf="canCancel(booking)">
+                <button mat-button color="warn" (click)="openCancelDialog(booking)">
+                  <mat-icon>cancel</mat-icon>
+                  Cancel Booking
+                </button>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Past Bookings Tab -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>history</mat-icon>
+          <span class="tab-label">Past</span>
+          <span class="tab-count" *ngIf="pastBookings.length > 0">{{ pastBookings.length }}</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div *ngIf="pastBookings.length === 0" class="empty-state">
+            <mat-icon>history</mat-icon>
+            <h3>No Past Bookings</h3>
+            <p>Your completed meetings will appear here</p>
+          </div>
+
+          <div class="booking-list" *ngIf="pastBookings.length > 0">
+            <mat-card class="booking-item past" *ngFor="let booking of pastBookings">
+              <div class="booking-header">
+                <div class="booking-date-time">
+                  <h3>{{ formatDate(booking.startTime) }}</h3>
+                  <p class="time-range">
+                    {{ formatTime(booking.startTime) }} - {{ formatTime(booking.endTime) }}
+                  </p>
+                </div>
+                <mat-chip-set>
+                  <mat-chip [ngClass]="getStatusClass(booking.status)">
+                    {{ booking.status }}
+                  </mat-chip>
+                </mat-chip-set>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="booking-details">
+                <h4 class="booking-title">{{ booking.title }}</h4>
+                <div class="booking-room">
+                  <mat-icon>meeting_room</mat-icon>
+                  <span>{{ booking.roomName }}</span>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Cancelled Bookings Tab -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>block</mat-icon>
+          <span class="tab-label">Cancelled</span>
+          <span class="tab-count cancelled" *ngIf="cancelledBookings.length > 0">{{ cancelledBookings.length }}</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div *ngIf="cancelledBookings.length === 0" class="empty-state">
+            <mat-icon>check_circle</mat-icon>
+            <h3>No Cancelled Bookings</h3>
+            <p>You haven't cancelled any bookings</p>
+          </div>
+
+          <div class="booking-list" *ngIf="cancelledBookings.length > 0">
+            <mat-card class="booking-item cancelled" *ngFor="let booking of cancelledBookings">
+              <div class="booking-header">
+                <div class="booking-date-time">
+                  <h3>{{ formatDate(booking.startTime) }}</h3>
+                  <p class="time-range">
+                    {{ formatTime(booking.startTime) }} - {{ formatTime(booking.endTime) }}
+                  </p>
+                </div>
+                <mat-chip-set>
+                  <mat-chip [ngClass]="getStatusClass(booking.status)">
+                    {{ booking.status }}
+                  </mat-chip>
+                </mat-chip-set>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="booking-details">
+                <h4 class="booking-title">{{ booking.title }}</h4>
+                <div class="booking-room">
+                  <mat-icon>meeting_room</mat-icon>
+                  <span>{{ booking.roomName }}</span>
+                </div>
+                <div class="cancel-reason" *ngIf="booking.cancelReason">
+                  <mat-icon>info</mat-icon>
+                  <span>Reason: {{ booking.cancelReason }}</span>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>
